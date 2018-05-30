@@ -1,67 +1,76 @@
+const double eps = 1e-7;
 class vec3{
 public:
-    double x, y, z, w;
-    vec3(){x = 0, y = 0, z = 0, w = 1;}
-    vec3(double x_, double y_, double z_){x = x_, y = y_, z = z_, w = 1;}
-    vec3(double x_, double y_, double z_, double w_){x = x_, y = y_, z = z_, w = w_;}
+    double c[4];
+    vec3(){c[0] = 0, c[1] = 0, c[2] = 0, c[3] = 1;}
+    vec3(double x_, double y_, double z_){c[0] = x_, c[1] = y_, c[2] = z_, c[3] = 1;}
+    vec3(double x_, double y_, double z_, double w_){c[0] = x_, c[1] = y_, c[2] = z_, c[3] = w_;}
 
     vec3 operator -(){
-        return vec3(-x, -y, -z, w);
+        return vec3(-c[0], -c[1], -c[2], c[3]);
     }
 
     vec3& operator +=(const vec3 &b){
-        x += b.x;
-        y += b.y;
-        z += b.z;
+        c[0] += b.c[0];
+        c[1] += b.c[1];
+        c[2] += b.c[2];
         return *this;
     }
     vec3& operator -=(const vec3 &b){
-        x -= b.x;
-        y -= b.y;
-        z -= b.z;
+        c[0] -= b.c[0];
+        c[1] -= b.c[1];
+        c[2] -= b.c[2];
         return *this;
     }
     vec3& operator *=(const vec3 &b){
-        x *= b.x;
-        y *= b.y;
-        z *= b.z;
+        c[0] *= b.c[0];
+        c[1] *= b.c[1];
+        c[2] *= b.c[2];
         return *this;
     }
     vec3& operator /=(const vec3 &b){
-        x /= b.x;
-        y /= b.y;
-        z /= b.z;
+        c[0] /= b.c[0];
+        c[1] /= b.c[1];
+        c[2] /= b.c[2];
         return *this;
     }
     vec3& operator *=(double a){
-        x *= a;
-        y *= a;
-        z *= a;
+        c[0] *= a;
+        c[1] *= a;
+        c[2] *= a;
         return *this;
     }
     vec3& operator /=(double a){
-        x /= a;
-        y /= a;
-        z /= a;
+        c[0] /= a;
+        c[1] /= a;
+        c[2] /= a;
         return *this;
     }
 };
 
 vec3 operator +(const vec3 &a, const vec3 &b){
-    return vec3(a.x + b.x, a.y + b.y, a.z + b.z, 1);
+    return vec3(a.c[0] + b.c[0], a.c[1] + b.c[1], a.c[2] + b.c[2], 1);
 }
 vec3 operator -(const vec3 &a, const vec3 &b){
-    return vec3(a.x - b.x, a.y - b.y, a.z - b.z, 1);
+    return vec3(a.c[0] - b.c[0], a.c[1] - b.c[1], a.c[2] - b.c[2], 1);
 }
 vec3 operator *(const vec3 &a, const vec3 &b){
-    return vec3(a.x * b.x, a.y * b.y, a.z * b.z, 1);
+    return vec3(a.c[0] * b.c[0], a.c[1] * b.c[1], a.c[2] * b.c[2], 1);
 }
 vec3 operator /(const vec3 &a, const vec3 &b){
-    return vec3(a.x / b.x, a.y / b.y, a.z / b.z, 1);
+    return vec3(a.c[0] / b.c[0], a.c[1] / b.c[1], a.c[2] / b.c[2], 1);
+}
+vec3 operator *(double a, const vec3 &b){
+    return vec3(a * b.c[0], a * b.c[1], a * b.c[2], 1);
+}
+vec3 operator /(double a, const vec3 &b){
+    return vec3(b.c[0] / a, b.c[1] / a, b.c[2] / a, 1);
 }
 double dot(const vec3 &a, const vec3 &b){
-    return (a.x * b.x + a.y * b.y + a.z * b.z) / a.w / b.w;
+    return (a.c[0] * b.c[0] + a.c[1] * b.c[1] + a.c[2] * b.c[2]) / a.c[3] / b.c[3];
 }
 vec3 cross(const vec3 &a, const vec3 &b){
-    return vec3((a.y * b.z - a.z * b.y) / a.w / b.w, (a.z * b.x - a.x * b.z) / a.w / b.w, (a.x * b.y - a.y * b.x) / a.w / b.w);
+    return vec3((a.c[1] * b.c[2] - a.c[2] * b.c[1]) / a.c[3] / b.c[3],
+                 (a.c[2] * b.c[0] - a.c[0] * b.c[2]) / a.c[3] / b.c[3],
+                 (a.c[0] * b.c[1] - a.c[1] * b.c[0]) / a.c[3] / b.c[3]);
 }
