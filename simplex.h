@@ -24,7 +24,7 @@ int perm_sign(int n, int p[]){
     }
     return p_sign;
 }
-bool intersect(simplex &s, ray &r, double t){
+bool intersect(simplex &s, ray &r, vec3 &p){
     double det = 0.0, delta_det = 0.0;
 
     int perm[] = {0, 1, 2, 3};
@@ -45,14 +45,14 @@ bool intersect(simplex &s, ray &r, double t){
     }while(next_permutation(perm, perm + 4));
 
     if(fabs(det) < eps){
-        t = 0;
+        p = r.starting_point;
         return true;
     }
 
     if(fabs(delta_det) < eps)return false;
     if(det / delta_det > eps)return false;
 
-    t = -det / delta_det;
+    p = r.starting_point - (det / delta_det) * r.direction;
 
     int gsign = 0;
     for(int i = 0; i < 3; i++){
