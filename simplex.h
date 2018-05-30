@@ -1,6 +1,6 @@
 class simplex{
 public:
-    vec3 p[3];
+    vec3 p[3], color;
     simplex(){};
     simplex(vec3 &a_, vec3 &b_, vec3 &c_){p[0] = a_; p[1] = b_; p[2] = c_;}
 };
@@ -24,7 +24,7 @@ int perm_sign(int n, int p[]){
     }
     return p_sign;
 }
-bool intersect(simplex &s, ray &r, vec3 &p){
+bool intersect(simplex &s, ray &r, double t){
     double det = 0.0, delta_det = 0.0;
 
     int perm[] = {0, 1, 2, 3};
@@ -45,14 +45,14 @@ bool intersect(simplex &s, ray &r, vec3 &p){
     }while(next_permutation(perm, perm + 4));
 
     if(fabs(det) < eps){
-        p = r.starting_point;
+        t = 0;
         return true;
     }
 
     if(fabs(delta_det) < eps)return false;
     if(det / delta_det > eps)return false;
 
-    p = r.starting_point - (det / delta_det) * r.direction;
+    t = -det / delta_det;
 
     int gsign = 0;
     for(int i = 0; i < 3; i++){

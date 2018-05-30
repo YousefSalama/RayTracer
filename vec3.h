@@ -1,4 +1,6 @@
 const double eps = 1e-7;
+const double PI = 3.14159265359;
+
 class vec3{
 public:
     double c[4];
