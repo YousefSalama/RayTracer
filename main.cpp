@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "vec3.h"
+#include "matrix.h"
 #include "ray.h"
 #include "simplex.h"
 #include "camera.h"
