@@ -25,10 +25,15 @@ public:
                         }
                     }
                 }
-                min_distance = min(sqrt(min_distance), 5.0);
-                color.c[0] = (min_distance + 5) / 10 * color.c[0];
-                color.c[1] = (min_distance + 5) / 10 * color.c[1];
-                color.c[2] = (min_distance + 5) / 10 * color.c[2];
+
+                /*
+                if(min_distance < 100000000){
+                    min_distance = min(sqrt(min_distance), 3.0);
+                    color.c[0] = (min_distance + 2) / 5.0 * color.c[0];
+                    color.c[1] = (min_distance + 2) / 5.0 * color.c[1];
+                    color.c[2] = (min_distance + 2) / 5.0 * color.c[2];
+                }
+                */
                 scolor += color;
             }
             scolor /= 4;
@@ -36,38 +41,37 @@ public:
         }
     }
 
-    int make_parallelepiped(vec3 x, vec3 y, vec3 z, vec3 color){
-        vec3 origin(0, 0, 0);
+    int make_parallelepiped(vec3 corner, vec3 x, vec3 y, vec3 z, vec3 color){
         physicalObject a;
 
-        simplex s1(origin, origin + x, origin + y); s1.color = color;
-        simplex s1_(origin + x + y, origin + x, origin + y); s1_.color = color;
+        simplex s1(corner, corner + x, corner + y); s1.color = color;
+        simplex s1_(corner + x + y, corner + x, corner + y); s1_.color = color;
         a.simplices.push_back(s1);
         a.simplices.push_back(s1_);
 
-        simplex s2(origin, origin + x, origin + z); s2.color = color;
-        simplex s2_(origin + x + z, origin + x, origin + z); s2_.color = color;
+        simplex s2(corner, corner + x, corner + z); s2.color = color;
+        simplex s2_(corner + x + z, corner + x, corner + z); s2_.color = color;
         a.simplices.push_back(s2);
         a.simplices.push_back(s2_);
 
-        simplex s3(origin, origin + y, origin + z); s3.color = color;
-        simplex s3_(origin + y + z, origin + y, origin + z); s3_.color = color;
+        simplex s3(corner, corner + y, corner + z); s3.color = color;
+        simplex s3_(corner + y + z, corner + y, corner + z); s3_.color = color;
 
         a.simplices.push_back(s3);
         a.simplices.push_back(s3_);
 
-        simplex _s1(z + origin, z + origin + x, z + origin + y); _s1.color = color;
-        simplex _s1_(z + origin + x + y, z + origin + x, z + origin + y); _s1.color = color;
+        simplex _s1(z + corner, z + corner + x, z + corner + y); _s1.color = color;
+        simplex _s1_(z + corner + x + y, z + corner + x, z + corner + y); _s1_.color = color;
         a.simplices.push_back(_s1);
         a.simplices.push_back(_s1_);
 
-        simplex _s2(y + origin, y + origin + x, y + origin + z); _s2.color = color;
-        simplex _s2_(y + origin + x + z, y + origin + x, y + origin + z); _s2_.color = color;
+        simplex _s2(y + corner, y + corner + x, y + corner + z); _s2.color = color;
+        simplex _s2_(y + corner + x + z, y + corner + x, y + corner + z); _s2_.color = color;
         a.simplices.push_back(_s2);
         a.simplices.push_back(_s2_);
 
-        simplex _s3(x + origin, x + origin + y, x + origin + z); _s3.color = color;
-        simplex _s3_(x + origin + y + z, x + origin + y, x + origin + z); _s3_.color = color;
+        simplex _s3(x + corner, x + corner + y, x + corner + z); _s3.color = color;
+        simplex _s3_(x + corner + y + z, x + corner + y, x + corner + z); _s3_.color = color;
         a.simplices.push_back(_s3);
         a.simplices.push_back(_s3_);
 

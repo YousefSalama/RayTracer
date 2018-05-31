@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
 #include <vector>
 #include <algorithm>
@@ -22,17 +23,20 @@ int main(){
     camera c(vec3(0, 2, -1), vec3(-1, 3, -0.5), vec3(0, -2, 0), vec3(2, 0, 0));
     sandbox s;
 
-    int id = s.make_parallelepiped(vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(200, 0, 0));
+    int id = s.make_parallelepiped(vec3(0, 0, 0), vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(200, 0, 0));
     s.universe[id].translate(vec3(0.5, 0.5, 0.5));
 
-    int id2 = s.make_parallelepiped(vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1), vec3(0, 200, 0));
+    int id2 = s.make_parallelepiped(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1), vec3(0, 200, 0));
     s.universe[id2].translate(vec3(0, 0, 2));
     s.universe[id2].rotateAroundYAxis(vec3(0, 0, 0), 45.0 / 180.0 * PI);
 
-    int id3 = s.make_parallelepiped(vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(0, 0, 200));
+    int id3 = s.make_parallelepiped(vec3(0, 0, 0), vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(0, 0, 200));
     s.universe[id3].translate(vec3(0, 2, 1));
     s.universe[id3].rotateAroundZAxis(vec3(0, 2, 1), 30.0 / 180.0 * PI);
     s.universe[id3].rotateAroundXAxis(vec3(0, 2, -1), 30.0 / 180.0 * PI);
+
+    int id4 = s.make_parallelepiped(vec3(0, 0, 0), vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 0.5), vec3(200, 200, 0));
+    s.universe[id4].translate(vec3(-0.5, 0, 0));
 
     s.render(400, 200, c);
 
