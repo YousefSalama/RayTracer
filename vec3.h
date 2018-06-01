@@ -48,6 +48,36 @@ public:
         c[2] /= a;
         return *this;
     }
+    void rotateAroundXAxis(vec3 origin, double angle){
+        *this -= origin;
+        vec3 p = *this;
+
+        p.c[1] = sin(angle) * c[2] + cos(angle) * c[1];
+        p.c[2] = cos(angle) * c[2] - sin(angle) * c[1];
+
+        p += origin;
+        *this = p;
+    }
+    void rotateAroundYAxis(vec3 origin, double angle){
+        *this -= origin;
+        vec3 p = *this;
+
+        p.c[0] = cos(angle) * c[0] - sin(angle) * c[2];
+        p.c[2] = sin(angle) * c[0] + cos(angle) * c[2];
+
+        p += origin;
+        *this = p;
+    }
+    void rotateAroundZAxis(vec3 origin, double angle){
+        *this -= origin;
+        vec3 p = *this;
+
+        p.c[0] = cos(angle) * c[0] - sin(angle) * c[1];
+        p.c[1] = sin(angle) * c[0] + cos(angle) * c[1];
+
+        p += origin;
+        *this = p;
+    }
 };
 
 vec3 operator +(const vec3 &a, const vec3 &b){

@@ -16,16 +16,21 @@ using namespace std;
 #include "sandbox.h"
 
 int main(){
+
     freopen("input.in", "r", stdin);
 
     freopen("image.ppm", "w", stdout);
     printf("P3\n");
 
-    camera c(vec3(1, 2, -1), vec3(0, 3, -0.5), vec3(0, -2, 0), vec3(2, 0, 0));
+    camera c(vec3(0, 2, -1), vec3(-1, 3, -0.5), vec3(0, -2, 0), vec3(2, 0, 0));
+    //c.translate(vec3(0, 0, -1));
+    //c.rotateAroundXAxis(vec3(0, 0, 0), -45.0 / 180.0 * PI);
+    //c.rotateAroundYAxis(vec3(0, 0, 0), 30.0 / 180.0 * PI);
+
     sandbox s;
 
     int id = s.make_parallelepiped(vec3(0, 0, 0), vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(200, 0, 0));
-    s.objects[id].translate(vec3(0.5, 0.5, 0.5));
+    s.objects[id].translate(vec3(0.8, 0.0, 0.5));
 
     int id2 = s.make_parallelepiped(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1), vec3(0, 200, 0));
     s.objects[id2].translate(vec3(0, 0, 2));
@@ -38,6 +43,9 @@ int main(){
 
     int id4 = s.make_parallelepiped(vec3(0, 0, 0), vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 0.5), vec3(200, 200, 0));
     s.objects[id4].translate(vec3(-0.5, 0, 0));
+
+    int id5 = s.make_quadrilateral(vec3(-10000, 0, -10000), vec3(-10000, 0, 10000), vec3(10000, 0, 10000), vec3(10000, 0, -10000),
+                                   vec3(228, 228, 228));
 
     s.add_light_source(vec3(1, 1.0, 0), 0.3);
     s.add_light_source(vec3(-0.5, 2, 1), 2.0);

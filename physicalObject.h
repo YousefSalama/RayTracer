@@ -4,46 +4,15 @@ public:
     phsyicalObject(){};
     void translate(vec3 d){
         for(int i = 0; i < simplices.size(); i++)
-        for(int j = 0; j < 3; j++)
-            simplices[i].p[j] += d;
+            simplices[i].translate(d);
     }
     void rotateAroundXAxis(vec3 origin, double angle){
-        for(int i = 0; i < simplices.size(); i++)
-        for(int j = 0; j < 3; j++){
-            vec3 p = simplices[i].p[j] - origin;
-            vec3 np = p;
-
-            np.c[1] = sin(angle) * p.c[2] + cos(angle) * p.c[1];
-            np.c[2] = cos(angle) * p.c[2] - sin(angle) * p.c[1];
-            np += origin;
-
-            simplices[i].p[j] = np;
-        }
+        for(int i = 0; i < simplices.size(); i++)simplices[i].rotateAroundXAxis(origin, angle);
     }
     void rotateAroundYAxis(vec3 origin, double angle){
-        for(int i = 0; i < simplices.size(); i++)
-        for(int j = 0; j < 3; j++){
-            vec3 p = simplices[i].p[j] - origin;
-            vec3 np = p;
-
-            np.c[0] = cos(angle) * p.c[0] - sin(angle) * p.c[2];
-            np.c[2] = sin(angle) * p.c[0] + cos(angle) * p.c[2];
-            np += origin;
-
-            simplices[i].p[j] = np;
-        }
+        for(int i = 0; i < simplices.size(); i++)simplices[i].rotateAroundYAxis(origin, angle);
     }
     void rotateAroundZAxis(vec3 origin, double angle){
-        for(int i = 0; i < simplices.size(); i++)
-        for(int j = 0; j < 3; j++){
-            vec3 p = simplices[i].p[j] - origin;
-            vec3 np = p;
-
-            np.c[0] = cos(angle) * p.c[0] - sin(angle) * p.c[1];
-            np.c[1] = sin(angle) * p.c[0] + cos(angle) * p.c[1];
-            np += origin;
-
-            simplices[i].p[j] = np;
-        }
+        for(int i = 0; i < simplices.size(); i++)simplices[i].rotateAroundZAxis(origin, angle);
     }
 };

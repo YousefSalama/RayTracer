@@ -3,6 +3,20 @@ public:
     vec3 p[3], color;
     simplex(){};
     simplex(vec3 a_, vec3 b_, vec3 c_){p[0] = a_; p[1] = b_; p[2] = c_;}
+    simplex(vec3 a_, vec3 b_, vec3 c_, vec3 color_){p[0] = a_; p[1] = b_, p[2] = c_; color = color_;}
+
+    void translate(vec3 d){
+        for(int i = 0; i < 3; i++)p[i] += d;
+    }
+    void rotateAroundXAxis(vec3 origin, double angle){
+        for(int i = 0; i < 3; i++)p[i].rotateAroundXAxis(origin, angle);
+    }
+    void rotateAroundYAxis(vec3 origin, double angle){
+        for(int i = 0; i < 3; i++)p[i].rotateAroundYAxis(origin, angle);
+    }
+    void rotateAroundZAxis(vec3 origin, double angle){
+        for(int i = 0; i < 3; i++)p[i].rotateAroundZAxis(origin, angle);
+    }
 };
 bool intersect(simplex &s, ray r, vec3 &p){
     matrix M(4, 4), dM(4, 4);

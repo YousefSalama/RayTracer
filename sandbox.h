@@ -59,6 +59,15 @@ public:
         return (int)objects.size() - 1;
     }
 
+    int make_quadrilateral(vec3 a, vec3 b, vec3 c, vec3 d, vec3 color){
+        physicalObject o;
+        simplex s1(a, b, c, color);
+        simplex s2(a, c, d, color);
+        o.simplices.push_back(s1);
+        o.simplices.push_back(s2);
+        return make_object(o);
+    }
+
     int make_parallelepiped(vec3 corner, vec3 x, vec3 y, vec3 z, vec3 color){
         physicalObject a;
 
