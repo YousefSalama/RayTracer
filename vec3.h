@@ -65,7 +65,7 @@ vec3 operator /(const vec3 &a, const vec3 &b){
 vec3 operator *(double a, const vec3 &b){
     return vec3(a * b.c[0], a * b.c[1], a * b.c[2], 1);
 }
-vec3 operator /(double a, const vec3 &b){
+vec3 operator /(const vec3 &b, double a){
     return vec3(b.c[0] / a, b.c[1] / a, b.c[2] / a, 1);
 }
 double dot(const vec3 &a, const vec3 &b){
