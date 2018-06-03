@@ -3,50 +3,102 @@ public:
     vector <physicalObject> objects;
     vector <lightSource> lightSources;
 
+    vec3 trace(ray r){
+        vec3 color(135, 206, 235);
+        bool reflect = false;
+
+        int object_index = -1;
+        int simplex_index = -1;
+
+        double min_distance = 100000000;
+        vec3 pi;
+
+        double orth_distance_from_light = 100000000;
+        double distance_from_light = 100000000;
+
+
+        for(int k = 0; k < lightSources.size(); k++){
+            double cur_distance = dot(lightSources[k].position - r.starting_point, r.direction);
+            double d = cur_distance /
+                        dot(r.direction, r.direction);
+
+            if(d > eps){
+                vec3 diff = (lightSources[k].position - r.starting_point) - d * r.direction;
+                double dist = dot(diff, diff);
+
+                if(dist < 0.005){
+                    distance_from_light = min(distance_from_light, cur_distance);
+                    orth_distance_from_light = max(0.002, min(distance_from_light, dist));
+                }
+            }
+        }
+
+        for(int k = 0; k < objects.size(); k++)
+        for(int f = 0; f < objects[k].simplices.size(); f++){
+            vec3 p;
+            if(intersect(objects[k].simplices[f], r, p)){
+                double cur_distance = dot(p - r.starting_point, p - r.starting_point);
+                if(cur_distance < min_distance){
+                    if(objects[k].global_color)color = objects[k].color;
+                    else color = objects[k].simplices[f].color;
+
+                    if(objects[k].reflective)reflect = true;
+                    else reflect = objects[k].simplices[f].reflective;
+
+
+                    object_index = k;
+                    simplex_index = f;
+
+                    pi = p;
+                    min_distance = cur_distance;
+                }
+            }
+        }
+
+        if(min_distance < 10000000){
+            if(distance_from_light < min_distance){
+                color = 0.002 * vec3(255, 255, 255) / orth_distance_from_light;
+            }else{
+                if(reflect){
+                    ray reflected_r;
+                    reflected_r.starting_point = pi;
+
+                    vec3 v = objects[object_index].simplices[simplex_index].find_plane();
+
+                    reflected_r.direction = r.direction - 2 * dot(r.direction, v) / dot(v, v) * v;
+                    return trace(reflected_r);
+                }else{
+                    double visibility = 0.0;
+                    for(int l = 0; l < lightSources.size(); l++){
+                        ray light_ray(pi, lightSources[l].position - pi);
+                        double light_distance = dot(light_ray.direction, light_ray.direction);
+
+                        bool blocked = false;
+                        for(int k = 0; k < objects.size(); k++)
+                        for(int f = 0; f < objects[k].simplices.size(); f++){
+                            vec3 p;
+                            if(intersect(objects[k].simplices[f], light_ray, p)){
+                                double cur_distance = dot(p - light_ray.starting_point, p - light_ray.starting_point);
+                                if(cur_distance < light_distance)blocked = true;
+                            }
+                        }
+
+                        if(!blocked)visibility = max(visibility, min(1.0, lightSources[l].intensity / light_distance));
+                    }
+                    color = visibility * color;
+                }
+            }
+        }
+        return color;
+    }
+
     void render(int n, int m, camera &c){
         printf("%d %d\n255\n", n, m);
 
         for(int i = 0; i < m; i++)
         for(int j = 0; j < n; j++){
             ray r = c.generateRay(1.0 * i / m, 1.0 * j / n);
-
-            double min_distance = 100000000;
-            vec3 color(135, 206, 235);
-            vec3 pi;
-
-            for(int k = 0; k < objects.size(); k++)
-            for(int f = 0; f < objects[k].simplices.size(); f++){
-                vec3 p;
-                if(intersect(objects[k].simplices[f], r, p)){
-                    double cur_distance = dot(p - r.starting_point, p - r.starting_point);
-                    if(cur_distance < min_distance){
-                        pi = p;
-                        min_distance = cur_distance;
-                        color = objects[k].simplices[f].color;
-                    }
-                }
-            }
-
-            if(min_distance < 10000000){
-                double visibility = 0.0;
-                for(int l = 0; l < lightSources.size(); l++){
-                    ray light_ray(pi, lightSources[l].position - pi);
-                    double light_distance = dot(light_ray.direction, light_ray.direction);
-
-                    bool blocked = false;
-                    for(int k = 0; k < objects.size(); k++)
-                    for(int f = 0; f < objects[k].simplices.size(); f++){
-                        vec3 p;
-                        if(intersect(objects[k].simplices[f], light_ray, p)){
-                            double cur_distance = dot(p - light_ray.starting_point, p - light_ray.starting_point);
-                            if(cur_distance < light_distance)blocked = true;
-                        }
-                    }
-
-                    if(!blocked)visibility = max(visibility, min(1.0, lightSources[l].intensity / light_distance));
-                }
-                color = visibility * color;
-            }
+            vec3 color = trace(r);
             printf("%d %d %d\n", (int)color.c[0], (int)color.c[1], (int)color.c[2]);
         }
     }
@@ -59,46 +111,55 @@ public:
         return (int)objects.size() - 1;
     }
 
-    int make_quadrilateral(vec3 a, vec3 b, vec3 c, vec3 d, vec3 color){
+    int make_quadrilateral(vec3 a, vec3 b, vec3 c, vec3 d, vec3 color, bool reflective){
         physicalObject o;
-        simplex s1(a, b, c, color);
-        simplex s2(a, c, d, color);
+        o.global_color = true;
+        o.color = color;
+
+        o.reflective = reflective;
+
+        simplex s1(a, b, c);
+        simplex s2(a, c, d);
         o.simplices.push_back(s1);
         o.simplices.push_back(s2);
         return make_object(o);
     }
 
-    int make_parallelepiped(vec3 corner, vec3 x, vec3 y, vec3 z, vec3 color){
+    int make_parallelepiped(vec3 corner, vec3 x, vec3 y, vec3 z, vec3 color, bool reflective){
         physicalObject a;
 
-        simplex s1(corner, corner + x, corner + y); s1.color = color;
-        simplex s1_(corner + x + y, corner + x, corner + y); s1_.color = color;
+        a.global_color = true;
+        a.color = color;
+        a.reflective = reflective;
+
+        simplex s1(corner, corner + x, corner + y);
+        simplex s1_(corner + x + y, corner + x, corner + y);
         a.simplices.push_back(s1);
         a.simplices.push_back(s1_);
 
-        simplex s2(corner, corner + x, corner + z); s2.color = color;
-        simplex s2_(corner + x + z, corner + x, corner + z); s2_.color = color;
+        simplex s2(corner, corner + x, corner + z);
+        simplex s2_(corner + x + z, corner + x, corner + z);
         a.simplices.push_back(s2);
         a.simplices.push_back(s2_);
 
-        simplex s3(corner, corner + y, corner + z); s3.color = color;
-        simplex s3_(corner + y + z, corner + y, corner + z); s3_.color = color;
+        simplex s3(corner, corner + y, corner + z);
+        simplex s3_(corner + y + z, corner + y, corner + z);
 
         a.simplices.push_back(s3);
         a.simplices.push_back(s3_);
 
-        simplex _s1(z + corner, z + corner + x, z + corner + y); _s1.color = color;
-        simplex _s1_(z + corner + x + y, z + corner + x, z + corner + y); _s1_.color = color;
+        simplex _s1(z + corner, z + corner + x, z + corner + y);
+        simplex _s1_(z + corner + x + y, z + corner + x, z + corner + y);
         a.simplices.push_back(_s1);
         a.simplices.push_back(_s1_);
 
-        simplex _s2(y + corner, y + corner + x, y + corner + z); _s2.color = color;
-        simplex _s2_(y + corner + x + z, y + corner + x, y + corner + z); _s2_.color = color;
+        simplex _s2(y + corner, y + corner + x, y + corner + z);
+        simplex _s2_(y + corner + x + z, y + corner + x, y + corner + z);
         a.simplices.push_back(_s2);
         a.simplices.push_back(_s2_);
 
-        simplex _s3(x + corner, x + corner + y, x + corner + z); _s3.color = color;
-        simplex _s3_(x + corner + y + z, x + corner + y, x + corner + z); _s3_.color = color;
+        simplex _s3(x + corner, x + corner + y, x + corner + z);
+        simplex _s3_(x + corner + y + z, x + corner + y, x + corner + z);
         a.simplices.push_back(_s3);
         a.simplices.push_back(_s3_);
 

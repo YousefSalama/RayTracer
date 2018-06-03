@@ -1,9 +1,11 @@
 class simplex{
 public:
     vec3 p[3], color;
+    bool reflective;
+
     simplex(){};
-    simplex(vec3 a_, vec3 b_, vec3 c_){p[0] = a_; p[1] = b_; p[2] = c_;}
-    simplex(vec3 a_, vec3 b_, vec3 c_, vec3 color_){p[0] = a_; p[1] = b_, p[2] = c_; color = color_;}
+    simplex(vec3 a_, vec3 b_, vec3 c_){p[0] = a_; p[1] = b_; p[2] = c_; reflective = false;}
+    simplex(vec3 a_, vec3 b_, vec3 c_, vec3 color_){p[0] = a_; p[1] = b_, p[2] = c_; color = color_; reflective = false;}
 
     void translate(vec3 d){
         for(int i = 0; i < 3; i++)p[i] += d;
@@ -16,6 +18,25 @@ public:
     }
     void rotateAroundZAxis(vec3 origin, double angle){
         for(int i = 0; i < 3; i++)p[i].rotateAroundZAxis(origin, angle);
+    }
+
+    vec3 find_plane(){
+        matrix M(4, 4);
+        for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++){
+            if(i == 3)M.M[i][j] = 0;
+            else M.M[i][j] = p[i].c[j];
+        }
+
+        vec3 v;
+        for(int j = 0; j < 3; j++){
+            M.M[3][j] = 1;
+            v.c[j] = M.determinant();
+            M.M[3][j] = 0;
+        }
+        v.c[3] = 1;
+
+        return v;
     }
 };
 bool intersect(simplex &s, ray r, vec3 &p){

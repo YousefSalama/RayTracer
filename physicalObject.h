@@ -1,6 +1,10 @@
 class physicalObject{
 public:
     vector <simplex> simplices;
+
+    bool global_color, reflective;
+    vec3 color;
+
     phsyicalObject(){};
     void translate(vec3 d){
         for(int i = 0; i < simplices.size(); i++)
