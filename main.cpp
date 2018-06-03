@@ -22,9 +22,9 @@ int main(){
     printf("P3\n");
 
     camera c(vec3(0, 2, -1), vec3(-1, 3, -0.5), vec3(0, -2, 0), vec3(2, 0, 0));
-    c.translate(vec3(0, 0, -1));
-    c.rotateAroundXAxis(vec3(0, 0, 0), -30.0 / 180.0 * PI);
-    c.rotateAroundYAxis(vec3(0, 0, 0), 30.0 / 180.0 * PI);
+    //c.translate(vec3(0, 0, -1));
+    //c.rotateAroundXAxis(vec3(0, 0, 0), -30.0 / 180.0 * PI);
+    //c.rotateAroundYAxis(vec3(0, 0, 0), 30.0 / 180.0 * PI);
 
     sandbox s;
 
@@ -51,7 +51,7 @@ int main(){
     int id7 = s.make_quadrilateral(vec3(-5, 0.2, 4), vec3(-5, 5, 4), vec3(5, 5, 4), vec3(5, 0.2, 4), vec3(255, 255, 255),
                                    true);
 
-    s.add_light_source(vec3(1.0, 0.7, 0), 0.2);
+    s.add_light_source(vec3(1.0, 0.7, 2), 0.2);
     s.add_light_source(vec3(-0.5, 2, 1), 2.0);
 
     s.render(400, 200, c);

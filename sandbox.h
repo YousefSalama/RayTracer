@@ -18,9 +18,10 @@ public:
 
 
         for(int k = 0; k < lightSources.size(); k++){
-            double cur_distance = dot(lightSources[k].position - r.starting_point, r.direction);
-            double d = cur_distance /
-                        dot(r.direction, r.direction);
+            double pr = dot(lightSources[k].position - r.starting_point, r.direction);
+
+            double d = pr / dot(r.direction, r.direction);
+            double cur_distance = pr * pr / dot(r.direction, r.direction);
 
             if(d > eps){
                 vec3 diff = (lightSources[k].position - r.starting_point) - d * r.direction;
