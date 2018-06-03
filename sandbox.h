@@ -3,7 +3,9 @@ public:
     vector <physicalObject> objects;
     vector <lightSource> lightSources;
 
-    vec3 trace(ray r){
+    vec3 trace(ray r, int depth = 0){
+        if(depth > 5)return vec3(0, 0, 0);
+
         vec3 color(135, 206, 235);
         bool reflect = false;
 
@@ -67,7 +69,7 @@ public:
                     vec3 v = objects[object_index].simplices[simplex_index].find_plane();
 
                     reflected_r.direction = r.direction - 2 * dot(r.direction, v) / dot(v, v) * v;
-                    return trace(reflected_r);
+                    return trace(reflected_r, depth + 1);
                 }else{
                     double visibility = 0.0;
                     for(int l = 0; l < lightSources.size(); l++){
