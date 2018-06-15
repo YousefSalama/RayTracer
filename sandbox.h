@@ -3,7 +3,7 @@ public:
     vector <physicalObject> objects;
     vector <lightSource> lightSources;
 
-    vec3 trace(ray r, int depth = 0){
+    vec3 trace(ray &r, int depth = 0){
         if(depth > 5)return vec3(0, 0, 0);
 
         vec3 color(135, 206, 235);
@@ -47,7 +47,6 @@ public:
 
                     if(objects[k].reflective)reflect = true;
                     else reflect = objects[k].simplices[f].reflective;
-
 
                     object_index = k;
                     simplex_index = f;
@@ -95,6 +94,17 @@ public:
         return color;
     }
 
+    void render_interval(int n, int m, int l, int r, camera &c){
+        for(int i = l; i <= r; i++){
+            int x = i % m, y = i / m;
+
+            ray r = c.generateRay(1.0 * x / m, 1.0 * y / n);
+            vec3 color = trace(r);
+
+            printf("%d %d %d\n", (int)color.c[0], (int)color.c[1], (int)color.c[2]);
+        }
+    }
+
     void render(int n, int m, camera &c){
         printf("%d %d\n255\n", n, m);
 
@@ -104,6 +114,15 @@ public:
             vec3 color = trace(r);
             printf("%d %d %d\n", (int)color.c[0], (int)color.c[1], (int)color.c[2]);
         }
+        /*
+        int nthreads = 4;
+        vector <thread> threads(nthreads);
+        for(int i = 0; i < nthreads; i++){
+            threads[i] = thread(render_interval, n, m, n * m / 4 * i, n * m / 4 * (i + 1) - 1, c);
+        }
+        for(int i = 0; i < nthreads; i++)
+            threads[i].join();
+        */
     }
     void add_light_source(vec3 position, double intensity){
         lightSources.push_back(lightSource(position, intensity));

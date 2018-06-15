@@ -1,3 +1,6 @@
+matrix plane(3, 4);
+int indices[] = {-1, -1, -1};
+
 class simplex{
 public:
     vec3 p[3], color;
@@ -21,40 +24,64 @@ public:
     }
 
     vec3 find_plane(){
-        matrix M(4, 4);
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 3; i++)
         for(int j = 0; j < 4; j++){
-            if(i == 3)M.M[i][j] = 0;
-            else M.M[i][j] = p[i].c[j];
+            plane.M[i][j] = p[i].c[j];
         }
 
         vec3 v;
-        for(int j = 0; j < 3; j++){
-            M.M[3][j] = 1;
-            v.c[j] = M.determinant();
-            M.M[3][j] = 0;
+        for(int i = 0; i < 3; i++)indices[i] = -1;
+
+        int l = 0;
+        for(int i = 0; i < 3; i++){
+            bool found = false;
+            for(int j = l; j < 3; j++)if(fabs(plane.M[j][i]) > 0){
+                if(l != j){
+                    for(int k = i; k < 4; k++)swap(plane.M[j][k], plane.M[l][k]);
+                }
+                found = true;
+                break;
+            }
+            if(found){
+                indices[l] = i;
+                for(int j = l + 1; j < 3; j++)if(fabs(plane.M[j][i]) > 0){
+                    double r = plane.M[j][i] / plane.M[l][i];
+                    for(int k = i; k < 4; k++)plane.M[j][k] -= plane.M[l][k] * r;
+                }
+                l++;
+            }
         }
-        v.c[3] = 1;
+
+        if(l == 3)v.c[3] = 1;
+        else v.c[3] = 0;
+
+        l--;
+        for(int i = 2; i >= 0; i--){
+            if(indices[l] == i){
+                v.c[i] = 0;
+                for(int j = i + 1; j < 4; j++)v.c[i] -= v.c[j] * plane.M[l][j];
+                v.c[i] /= plane.M[l][i];
+
+                l--;
+            }else{
+                v.c[i] = 1;
+            }
+        }
 
         return v;
     }
 };
-bool intersect(simplex &s, ray r, vec3 &p){
-    matrix M(4, 4), dM(4, 4);
-    for(int i = 0; i < 3; i++)
-    for(int j = 0; j < 4; j++){
-        M.M[i][j] = s.p[i].c[j];
-        dM.M[i][j] = s.p[i].c[j];
-    }
-    for(int j = 0; j < 4; j++){
-        M.M[3][j] = r.starting_point.c[j];
 
-        if(j == 3)dM.M[3][j] = 0;
-        else dM.M[3][j] = r.direction.c[j];
-    }
+bool intersect(simplex &s, ray &r, vec3 &p){
+    vec3 v = s.find_plane();
 
-    double det = M.determinant();
-    double delta_det = dM.determinant();
+    double det = 0.0;
+    double delta_det = 0.0;
+
+    for(int i = 0; i < 4; i++){
+        if(i != 3)delta_det += v.c[i] * r.direction.c[i];
+        det += v.c[i] * r.starting_point.c[i];
+    }
 
     if(fabs(det) < eps)return false;
     if(fabs(delta_det) < eps)return false;

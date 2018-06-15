@@ -99,10 +99,10 @@ vec3 operator /(const vec3 &b, double a){
     return vec3(b.c[0] / a, b.c[1] / a, b.c[2] / a, 1);
 }
 double dot(const vec3 &a, const vec3 &b){
-    return (a.c[0] * b.c[0] + a.c[1] * b.c[1] + a.c[2] * b.c[2]) / a.c[3] / b.c[3];
+    return (a.c[0] * b.c[0] + a.c[1] * b.c[1] + a.c[2] * b.c[2]);
 }
 vec3 cross(const vec3 &a, const vec3 &b){
-    return vec3((a.c[1] * b.c[2] - a.c[2] * b.c[1]) / a.c[3] / b.c[3],
-                 (a.c[2] * b.c[0] - a.c[0] * b.c[2]) / a.c[3] / b.c[3],
-                 (a.c[0] * b.c[1] - a.c[1] * b.c[0]) / a.c[3] / b.c[3]);
+    return vec3((a.c[1] * b.c[2] - a.c[2] * b.c[1]),
+                 (a.c[2] * b.c[0] - a.c[0] * b.c[2]),
+                 (a.c[0] * b.c[1] - a.c[1] * b.c[0]));
 }
