@@ -70,7 +70,7 @@ public:
                     ray reflected_r;
                     reflected_r.starting_point = pi;
 
-                    vec3 v = objects[object_index].simplices[simplex_index].find_plane();
+                    vec3 v = objects[object_index].simplices[simplex_index].normal_vector;
 
                     reflected_r.direction = r.direction - 2 * dot(r.direction, v) / dot(v, v) * v;
                     return trace(reflected_r, depth + 1);
@@ -100,8 +100,12 @@ public:
     }
 
     void render(int n, int m, camera &c){
-        const int threads_count = 4;
-        assert(n % threads_count == 0);
+        for(int i = 0; i < (int)objects.size(); i++)
+        for(int j = 0; j < (int)objects[i].simplices.size(); j++)
+            objects[i].simplices[j].find_plane();
+
+        const int threads_count = 16;
+        // assert(n % threads_count == 0);
 
         int block_size = n / threads_count;
         thread ths[threads_count];
