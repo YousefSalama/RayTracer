@@ -23,7 +23,9 @@ public:
         for(int i = 0; i < 3; i++)p[i].rotateAroundZAxis(origin, angle);
     }
 
-    vec3 find_plane(){
+    vec3 normal_vector;
+
+    void find_plane(){
         for(int i = 0; i < 3; i++)
         for(int j = 0; j < 4; j++){
             plane.M[i][j] = p[i].c[j];
@@ -68,12 +70,12 @@ public:
             }
         }
 
-        return v;
+        normal_vector = v;
     }
 };
 
 bool intersect(simplex &s, ray &r, vec3 &p){
-    vec3 v = s.find_plane();
+    vec3 v = s.normal_vector;
 
     double det = 0.0;
     double delta_det = 0.0;
