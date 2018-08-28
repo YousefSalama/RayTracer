@@ -1,3 +1,8 @@
+
+static const int BUFFER_HEIGHT = 500;
+static const int BUFFER_WIDTH = 1000;
+
+vec3 buffer[BUFFER_HEIGHT][BUFFER_WIDTH];
 class sandbox{
 public:
     vector <physicalObject> objects;
@@ -94,35 +99,14 @@ public:
         return color;
     }
 
-    void render_interval(int n, int m, int l, int r, camera &c){
-        for(int i = l; i <= r; i++){
-            int x = i % m, y = i / m;
-
-            ray r = c.generateRay(1.0 * x / m, 1.0 * y / n);
-            vec3 color = trace(r);
-
-            printf("%d %d %d\n", (int)color.c[0], (int)color.c[1], (int)color.c[2]);
-        }
-    }
-
     void render(int n, int m, camera &c){
-        printf("%d %d\n255\n", n, m);
-
-        for(int i = 0; i < m; i++)
-        for(int j = 0; j < n; j++){
-            ray r = c.generateRay(1.0 * i / m, 1.0 * j / n);
+        for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++){
+            ray r = c.generateRay(1.0 * i / n, 1.0 * j / m);
             vec3 color = trace(r);
-            printf("%d %d %d\n", (int)color.c[0], (int)color.c[1], (int)color.c[2]);
+
+            buffer[i][j] = color;
         }
-        /*
-        int nthreads = 4;
-        vector <thread> threads(nthreads);
-        for(int i = 0; i < nthreads; i++){
-            threads[i] = thread(render_interval, n, m, n * m / 4 * i, n * m / 4 * (i + 1) - 1, c);
-        }
-        for(int i = 0; i < nthreads; i++)
-            threads[i].join();
-        */
     }
     void add_light_source(vec3 position, double intensity){
         lightSources.push_back(lightSource(position, intensity));

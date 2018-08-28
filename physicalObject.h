@@ -5,7 +5,7 @@ public:
     bool global_color, reflective;
     vec3 color;
 
-    phsyicalObject(){};
+    physicalObject(){};
     void translate(vec3 d){
         for(int i = 0; i < simplices.size(); i++)
             simplices[i].translate(d);

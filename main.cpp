@@ -1,3 +1,5 @@
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -17,15 +19,8 @@ using namespace std;
 #include "sandbox.h"
 
 int main(){
-    simplex si(vec3(2, 0, 0), vec3(1, 1, 0), vec3(1, 0, 1));
-    vec3 p = si.find_plane();
-    //printf("%.3f %.3f %.3f %.3f\n", p.c[0], p.c[1], p.c[2], p.c[3]);
-
-
-    freopen("input.in", "r", stdin);
-
-    freopen("image.ppm", "w", stdout);
-    printf("P3\n");
+    ofstream img;
+    img.open("image.ppm");
 
     camera c(vec3(0, 2, -1), vec3(-2, 3, -0.5), vec3(0, -2, 0), vec3(4, 0, 0));
     c.translate(vec3(0, 0, -1));
@@ -65,7 +60,18 @@ int main(){
     s.add_light_source(vec3(1.0, 0.7, 0.2), 0.2);
     s.add_light_source(vec3(-0.5, 2, 1), 2.0);
 
-    s.render(1000, 500, c);
+    cout << "Rendering Start" << endl;
+
+    s.render(BUFFER_HEIGHT, BUFFER_WIDTH, c);
+
+    img << "P3" << endl;
+    img << BUFFER_WIDTH << ' ' << BUFFER_HEIGHT << endl << 255 << endl;
+
+    for(int i = 0; i < BUFFER_HEIGHT; i++)
+    for(int j = 0; j < BUFFER_WIDTH; j++)
+        img << (int)buffer[i][j].c[0] << ' ' << (int)buffer[i][j].c[1] << ' ' << (int)buffer[i][j].c[2] << endl;
+
+    cout << "Rendering End" << endl;
 
     return 0;
 }
