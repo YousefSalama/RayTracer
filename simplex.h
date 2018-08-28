@@ -1,14 +1,14 @@
-matrix plane(3, 4);
-int indices[] = {-1, -1, -1};
 
 class simplex{
 public:
+    matrix plane;
+    int indices[3];
     vec3 p[3], color;
     bool reflective;
 
-    simplex(){};
-    simplex(vec3 a_, vec3 b_, vec3 c_){p[0] = a_; p[1] = b_; p[2] = c_; reflective = false;}
-    simplex(vec3 a_, vec3 b_, vec3 c_, vec3 color_){p[0] = a_; p[1] = b_, p[2] = c_; color = color_; reflective = false;}
+    simplex(): plane(3, 4), indices{-1, -1, -1} {};
+    simplex(vec3 a_, vec3 b_, vec3 c_) : plane(3, 4) {p[0] = a_; p[1] = b_; p[2] = c_; reflective = false;}
+    simplex(vec3 a_, vec3 b_, vec3 c_, vec3 color_) : plane(3, 4) {p[0] = a_; p[1] = b_, p[2] = c_; color = color_; reflective = false;}
 
     void translate(vec3 d){
         for(int i = 0; i < 3; i++)p[i] += d;

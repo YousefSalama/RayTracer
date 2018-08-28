@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <math.h>
 #include <thread>
+#include <chrono>
 using namespace std;
 
 #include "vec3.h"
@@ -60,6 +61,7 @@ int main(){
     s.add_light_source(vec3(1.0, 0.7, 0.2), 0.2);
     s.add_light_source(vec3(-0.5, 2, 1), 2.0);
 
+    auto start = std::chrono::steady_clock::now();
     cout << "Rendering Start" << endl;
 
     s.render(BUFFER_HEIGHT, BUFFER_WIDTH, c);
@@ -71,7 +73,8 @@ int main(){
     for(int j = 0; j < BUFFER_WIDTH; j++)
         img << (int)buffer[i][j].c[0] << ' ' << (int)buffer[i][j].c[1] << ' ' << (int)buffer[i][j].c[2] << endl;
 
-    cout << "Rendering End" << endl;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+    cout << "Rendering End. Duration: " << (duration).count() << endl;
 
     return 0;
 }

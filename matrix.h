@@ -1,5 +1,5 @@
-double determinantM[4][4];
 struct matrix{
+    double determinantM[4][4];
     double M[4][4];
     int n, m;
 

@@ -100,12 +100,27 @@ public:
     }
 
     void render(int n, int m, camera &c){
-        for(int i = 0; i < n; i++)
-        for(int j = 0; j < m; j++){
-            ray r = c.generateRay(1.0 * i / n, 1.0 * j / m);
-            vec3 color = trace(r);
+        const int threads_count = 4;
+        assert(n % threads_count == 0);
 
-            buffer[i][j] = color;
+        int block_size = n / threads_count;
+        thread ths[threads_count];
+        for (int thread_index = 0; thread_index < threads_count; thread_index++) {
+            ths[thread_index] = std::thread([thread_index, threads_count, block_size, this, n, m, &c]{
+                // for(int i = thread_index * block_size; i < (thread_index + 1) * block_size; i++)
+                for(int i = 0; i < n; i++)
+                // for(int j = 0; j < m; j++) {
+                for(int j = 0; j < m; j++) if (i % threads_count == thread_index) {
+                    ray r = c.generateRay(1.0 * i / n, 1.0 * j / m);
+                    vec3 color = trace(r);
+
+                    buffer[i][j] = color;
+                }
+            });
+        }
+
+        for (int thread_index = 0; thread_index < threads_count; thread_index++) {
+            ths[thread_index].join();
         }
     }
     void add_light_source(vec3 position, double intensity){
