@@ -104,16 +104,14 @@ public:
         for(int j = 0; j < (int)objects[i].simplices.size(); j++)
             objects[i].simplices[j].find_plane();
 
-        const int threads_count = 16;
-        // assert(n % threads_count == 0);
+        const int threads_count = 4;
+        assert(n % threads_count == 0);
 
         int block_size = n / threads_count;
         thread ths[threads_count];
         for (int thread_index = 0; thread_index < threads_count; thread_index++) {
             ths[thread_index] = std::thread([thread_index, threads_count, block_size, this, n, m, &c]{
-                // for(int i = thread_index * block_size; i < (thread_index + 1) * block_size; i++)
                 for(int i = 0; i < n; i++)
-                // for(int j = 0; j < m; j++) {
                 for(int j = 0; j < m; j++) if (i % threads_count == thread_index) {
                     ray r = c.generateRay(1.0 * i / n, 1.0 * j / m);
                     vec3 color = trace(r);
